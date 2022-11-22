@@ -2,8 +2,12 @@
   "name": "nodejs_auth_template",
   "version": "1.0.0",
   "description": "A template for an authenticated NodeJS backend",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
+    "start": "pm2 start ecosystem.config.js --no-daemon --env production",
+    "staging": "pm2 start ecosystem.config.js --no-daemon --env staging",
+    "dev": "pm2 start ecosystem.config.js --no-daemon --env development",
+    "docker_dev": "pm2 start ecosystem.config.js --no-daemon --env docker",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mark Gerrity",

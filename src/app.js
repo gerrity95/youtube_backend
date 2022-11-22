@@ -4,26 +4,26 @@ const app = express();
 const session = require('express-session');
 const {errorConverter, errorHandler} = require('./middleware/error');
 const routes = require('./routes');
-require('dotenv').config();
 const bodyParser = require("body-parser")
 const cookieParser = require("cookie-parser")
 const passport = require('passport');
 require("./strategies/jwt.strategy")
 require("./strategies/local.strategy")
-require("./middleware/authenticate")
+require("./middleware/authenticate");
+const config = require('./config/config');
 
 app.use(bodyParser.json())
-app.use(cookieParser(process.env.COOKIE_SECRET))
+app.use(cookieParser(config.cookieSecret))
 app.use(session({
-  secret: 'keyboard cat',
+  secret: config.sessionSecret,
   resave: false,
   saveUninitialized: true,
   cookie: { secure: true }
 }))
 
 //Add the client URL to the CORS policy
-const whitelist = process.env.WHITELISTED_DOMAINS
-  ? process.env.WHITELISTED_DOMAINS.split(",")
+const whitelist = config.whitelistedDomains
+  ? config.whitelistedDomains.split(",")
   : []
 
 const corsOptions = {

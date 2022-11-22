@@ -3,6 +3,7 @@ const httpStatus = require('http-status');
 const User = require('../models/user');
 const logger = require('../middleware/logger');
 const jwt = require("jsonwebtoken")
+const config = require('../config/config');
 
 const { getToken, COOKIE_OPTIONS, getRefreshToken } = require("../middleware/authenticate");
   
@@ -36,30 +37,6 @@ async function signUp(req, res) {
   )
 }
 
-// const login = async (req, res) => {
-//   logger.info('login request');
-//   passport.authenticate('local', function(err, user, info) {
-//     console.log(err);
-//     console.log(user);
-//     // const token = getToken({ _id: req.user._id })
-//     // const refreshToken = getRefreshToken({ _id: req.user._id })
-//     // User.findById(req.user._id).then(
-//     //   user => {
-//     //     user.refreshToken.push({ refreshToken })
-//     //     user.save((err, user) => {
-//     //       if (err) {
-//     //         throw new ApiError(err.status, err.message);
-//     //       } else {
-//     //         res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
-//     //         return { success: true, token };
-//     //       }
-//     //     })
-//     //   },
-//     //   err => {throw new ApiError(err.status, err.message)}
-//     // )
-//   });
-// }
-
 function handleRegisterError(err, next) {
   logger.info(err.name);
   if (err.name == 'UserExistsError') {
@@ -83,14 +60,17 @@ const refreshToken = async (req) => {
   const { signedCookies = {} } = req
   const { refreshToken } = signedCookies
 
+  console.log(refreshToken);
+
   if (!refreshToken) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'No refresh token provided. Please login again.');
   }
 
   let payload;
   try {
-    payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+    payload = jwt.verify(refreshToken, config.publicKey, config.jwtSignOptions);
   } catch (err) {
+    console.log(err);
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Token has expired. Please login again.');
    }
   const userId = payload._id

@@ -42,7 +42,11 @@ exports.login = catchAsync(async (req, res, next) => {
   logger.info('Processing attempt to login');
   passport.authenticate("local", function(info, user, err) {
     if (err) {
-      console.log(err.status);
+      console.log(err);
+      const authErrors = ['IncorrectPasswordError', 'IncorrectUsernameError'];
+      if (authErrors.includes(err.name)) {
+        return res.status(httpStatus.UNAUTHORIZED).send('Incorrect Username or Password');
+      }
       return next(err);
     }
     const token = getToken({ _id: user._id })
