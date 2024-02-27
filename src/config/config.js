@@ -5,24 +5,19 @@ const Joi = require('joi');
 
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
-const devPrivateKeyPath = path.join(__dirname, '..', 'extras', 'dev_private_key.pem');
-const devPublicKeyPath = path.join(__dirname, '..', 'extras', 'dev_public_key.pem');
-
 const envVarsSchema = Joi.object()
   .keys({
     APP_NAME: Joi.string().required().description('Name of application'),
     NODE_ENV: Joi.string().valid('production', 'staging', 'development', 'test').required(),
     PORT: Joi.number().default(8080),
     MONGO_HOST: Joi.string().required().description('Mongo DB Host'),
-    MONGO_USER: Joi.string().required().description('Mongo DB User'),
+    MONGO_USERNAME: Joi.string().required().description('Mongo DB User'),
     MONGO_PASSWORD: Joi.string().required().description('Mongo DB Password'),
     MONGO_PORT: Joi.string().required().description('Mongo DB Port'),
     MONGO_DB: Joi.string().required().description('Mongo DB Collection'),
-    COOKIE_SECRET: Joi.string().required().description('Secret cookie string'),
+    KEY_PREFIX: Joi.string().required().description('Prefix for API Keys'),
+    KEY_SIGNER: Joi.string().required().description('Salt signer for API Keys'),
     WHITELISTED_DOMAINS: Joi.string().required().description('Whitelisted domains'),
-    SESSION_SECRET: Joi.string().required().description('Secret session secret'),
-    REFRESH_TOKEN_SECRET: Joi.string().required().description('Refresh session secret'),
-    REFRESH_TOKEN_EXPIRY: Joi.string().required().description('Token expiry period for refresh token')
   })
   .unknown();
 
@@ -36,12 +31,11 @@ module.exports = {
   name: envVars.APP_NAME,
   env: envVars.NODE_ENV,
   port: envVars.PORT,
-  cookieSecret: envVars.COOKIE_SECRET,
+  keyPrefix: envVars.KEY_PREFIX,
+  keySigner: envVars.KEY_SIGNER,
   whitelistedDomains: envVars.WHITELISTED_DOMAINS,
-  sessionSecret: envVars.SESSION_SECRET,
-  refreshSecret: envVars.REFRESH_TOKEN_SECRET,
   mongoose: {
-    url: `mongodb://${envVars.MONGO_USER}:${envVars.MONGO_PASSWORD}@${envVars.MONGO_HOST}:${envVars.MONGO_PORT}/${
+    url: `mongodb://${envVars.MONGO_USERNAME}:${envVars.MONGO_PASSWORD}@${envVars.MONGO_HOST}:${envVars.MONGO_PORT}/${
       envVars.MONGO_DB
     }`,
     options: {
@@ -51,15 +45,4 @@ module.exports = {
       useUnifiedTopology: true
     },
   },
-  jwtSignOptions: {
-    issuer: envVars.APP_NAME,
-    expiresIn: '1m',
-    algorithm: 'RS256',
-  },
-  privateKey: ['staging', 'production'].includes(envVars.NODE_ENV)
-    ? envVars.PRIVATE_KEY
-    : fs.readFileSync(devPrivateKeyPath, 'utf8'),
-  publicKey: ['staging', 'production'].includes(envVars.NODE_ENV)
-    ? envVars.PUBLIC_KEY
-    : fs.readFileSync(devPublicKeyPath, 'utf8')
 };

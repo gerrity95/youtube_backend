@@ -1,50 +1,29 @@
-const mongoose = require("mongoose")
-const Schema = mongoose.Schema
-
-const passportLocalMongoose = require("passport-local-mongoose")
-
-const Session = new Schema({
-  refreshToken: {
-    type: String,
-    default: "",
-  },
-})
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const crypto = require('crypto'); 
+const config = require('../config/config');  
 
 const User = new Schema({
-  username: {
+  apiKey: {
     type: String,
     unique: true,
     required: true
   },
-  firstName: {
+  prefix: {
     type: String,
     default: "",
   },
-  lastName: {
-    type: String,
-    default: "",
-  },
-  authStrategy: {
-    type: String,
-    default: "local",
-  },
-  points: {
-    type: Number,
-    default: 50,
-  },
-  refreshToken: {
-    type: [Session],
+  scope: {
+    type: Array,
   },
 })
 
-//Remove refreshToken from the response
-User.set("toJSON", {
-  transform: function (doc, ret, options) {
-    delete ret.refreshToken
-    return ret
-  },
-})
+// Method to set salt and hash the apiKey for a user 
+User.methods.hashApiKey = function(rawKey) { 
+  // Hashing user's salt and password with 1000 iterations, 
+  this.apiKey = crypto.pbkdf2Sync(rawKey, config.keySigner,  
+  1000, 64, `sha512`).toString(`hex`); 
+}; 
 
-User.plugin(passportLocalMongoose)
 
 module.exports = mongoose.model("User", User)

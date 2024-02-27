@@ -1,22 +1,11 @@
 const Joi = require('joi');
 
-const signUp = {
+const generateApi = {
   body: Joi.object().keys({
-    username: Joi.string().required(),
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
-    password: Joi.string().required(),
-  }),
-};
-
-const login = {
-  body: Joi.object().keys({
-    username: Joi.string().required(),
-    password: Joi.string().required(),
+    scope: Joi.array().items(Joi.string()).required()
   }),
 };
 
 module.exports = {
-  signUp,
-  login
+  generateApi,
 }

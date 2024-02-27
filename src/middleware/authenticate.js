@@ -1,26 +1,21 @@
-const passport = require("passport")
-const jwt = require("jsonwebtoken")
-const config = require('../config/config');
+const logger = require("./logger");
+const ApiError = require("../utils/ApiError");
 
-exports.COOKIE_OPTIONS = {
-  httpOnly: true,
-  // Since localhost is not having https protocol,
-  // secure cookies do not work correctly (in postman)
-  secure: true,
-  signed: true,
-  maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY) * 1000,
-  sameSite: "none",
+exports.verifyToken = (req, res, next) => {
+  // Verify bearer token is present
+  logger.info('Attempting to validate API key.');
+  let key = req.headers['authorization'];
+  if (key) {
+    if (key.startsWith('Bearer ')) {
+      const token = key.slice(7, key.length);
+      res.locals.token = token;
+    } else {
+      logger.error('Incorrect authorization header present.');
+      throw new ApiError(401, 'Incorrect authorization header present. Please user "Bearer " in your request.');
+    }
+    next();
+  } else {
+    logger.error('No key present in request.');
+    throw new ApiError(401, 'No API key present in request.');
+  }
 }
-
-exports.getToken = user => {
-  return jwt.sign(user, process.env.JWT_SECRET, {
-    expiresIn: eval(process.env.SESSION_EXPIRY),
-  })
-}
-
-exports.getRefreshToken = user => {
-  const refreshToken = jwt.sign(user, config.privateKey, config.jwtSignOptions)
-  return refreshToken
-}
-
-exports.verifyUser = passport.authenticate("jwt", { session: false });

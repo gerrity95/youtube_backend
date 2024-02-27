@@ -1,18 +1,16 @@
 const express = require("express")
 const router = express.Router();
+const scopes = require('../helpers/scopes');
 const validate = require('../middleware/validate');
 const userController = require('../controllers/user.controller')
 const userValidations = require('../validations/user.validations');
-const { verifyUser } = require('../middleware/authenticate');
+const { verifyToken } = require('../middleware/authenticate');
+const { verifyUser } = require('../middleware/authorize');
 
-router.get('/logout', verifyUser, userController.logout);
-router.get('/', verifyUser, (req, res, next) => {
-  res.send(req.user);
-});
+router.get('/search', verifyToken, verifyUser([scopes.Search]), userController.search);
 
-router.post('/signup', validate(userValidations.signUp), userController.signUp);
-router.post('/login', validate(userValidations.login), userController.login);
-router.post('/refreshToken', userController.refreshToken);
+router.post('/generate_api', validate(userValidations.generateApi), userController.generateApi);
+// router.delete('/delete_api', userController.login);
 
 
 module.exports = router

@@ -1,4 +1,4 @@
-FROM node:14-alpine as build
+FROM node:21-alpine as build
 
 # RUN apk add g++ make py3-pip
 
@@ -9,6 +9,8 @@ RUN mkdir -p /var/log/auth_backend && chown -R node:node /var/log/auth_backend
 WORKDIR /home/node/app
 
 COPY package*.json ./
+
+RUN chown node:node package*.json
 
 # # Install python/pip
 # ENV PYTHONUNBUFFERED=1
@@ -25,7 +27,7 @@ COPY --chown=node:node . .
 EXPOSE 8080
 
 
-FROM node:14-alpine as main
+FROM node:21-alpine as main
 
 WORKDIR /home/node/app
 

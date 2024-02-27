@@ -7,7 +7,7 @@
     "start": "pm2 start ecosystem.config.js --no-daemon --env production",
     "staging": "pm2 start ecosystem.config.js --no-daemon --env staging",
     "dev": "pm2 start ecosystem.config.js --no-daemon --env development",
-    "docker_dev": "pm2 start ecosystem.config.js --no-daemon --env docker",
+    "docker_dev": "node ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mark Gerrity",
@@ -21,7 +21,7 @@
     "express-session": "^1.17.3",
     "http-status": "^1.5.3",
     "httpstatus": "^1.0.0",
-    "joi": "^17.7.0",
+    "joi": "^17.12.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.7.2",
     "passport": "^0.6.0",
