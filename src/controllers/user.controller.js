@@ -7,8 +7,3 @@ exports.generateApi = catchAsync(async (req, res) => {
   const result = await userService.generateApiKey(req);
   res.send({ success: true, apiKey: result.apiKey, prefix: result.prefix });
 })
-
-exports.search = catchAsync(async (req, res) => {
-  logger.info('Attempting to search YouTube API');
-  res.send({ success: true });
-})

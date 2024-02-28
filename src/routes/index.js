@@ -1,5 +1,6 @@
 const express = require('express');
 const userRouter = require('./user.routes');
+const youtubeRouter = require('./youtube.routes');
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
 
@@ -9,6 +10,11 @@ const defaultRoutes = [
   {
     path: '/user',
     route: userRouter,
+  },
+
+  {
+    path: '/youtube',
+    route: youtubeRouter,
   },
 ];
 
