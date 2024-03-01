@@ -1,0 +1,41 @@
+name: Docker Image & Push to Docker Hub
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+
+  update-semver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: haya14busa/action-update-semver@v1
+        id: version
+        with:
+          major_version_tag_only: true  # (optional, default is "false")
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code from Repo
+      uses: actions/checkout@v3
+      
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        
+    # - name: Build and push Docker image
+    #   uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+    #   with:
+    #     context: .
+    #     push: true
+    #     tags: gerrity95/youtube_backend:latest
+    - name: Build image
+      run: |
+        tag_v=$(git describe --tags $(git rev-list --tags --max-count=1))
+        tag=$(echo $tag_v | sed 's/v//')
+        docker build -t gerrity95/youtube_backend:${tag} .
