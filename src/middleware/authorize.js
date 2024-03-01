@@ -11,15 +11,16 @@ exports.verifyUser = (validScopes = []) => async (req, res, next) => {
   const user = await User.findOne({apiKey: signedKey})
   if (!user) {
     logger.error(`Unable to find API key: ${res.locals.token}`);
-    next(new ApiError(401, 'Invalid API Key passed in request.'));
+    return next(new ApiError(401, 'Invalid API Key passed in request.'));
   }
   const hasScope = user.scope.some(element => {
     return validScopes.includes(element);
   });
   if (!hasScope) {
     logger.error(`API Key: ${res.locals.token} does not have the correct scope to make this request`);
-    next(new ApiError(401, 'API Key does not have the required permissions to make this request.'));
+    return next(new ApiError(401, 'API Key does not have the required permissions to make this request.'));
   }
+  logger.info('Succesfully validated key.');
   next();
 }
 
