@@ -31,7 +31,5 @@ jobs:
       with:
         context: .
         push: true
-        tags: 
-          - gerrity95/youtube_backend:${{ steps.version.outputs.version }}
-          - gerrity95/youtube_backend:latest
+        tags: gerrity95/youtube_backend:${{ steps.version.outputs.version }},gerrity95/youtube_backend:latest
 
