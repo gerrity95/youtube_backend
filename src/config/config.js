@@ -1,4 +1,3 @@
-const fs = require('fs');
 const dotenv = require('dotenv');
 const path = require('path');
 const Joi = require('joi');
@@ -37,12 +36,13 @@ module.exports = {
   mongoose: {
     url: `mongodb://${envVars.MONGO_USERNAME}:${envVars.MONGO_PASSWORD}@${envVars.MONGO_HOST}:${envVars.MONGO_PORT}/${
       envVars.MONGO_DB
-    }`,
+    }` + (envVars.NODE_ENV === 'test' ? '-test' : ''),
     options: {
       connectTimeoutMS: 10000,
       directConnection: true,
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      authSource: 'admin'
     },
   },
 };

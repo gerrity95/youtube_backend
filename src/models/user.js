@@ -25,5 +25,6 @@ User.methods.hashApiKey = function(rawKey) {
   1000, 64, `sha512`).toString(`hex`); 
 }; 
 
+const UserModel = mongoose.model("User", User);
 
-module.exports = mongoose.model("User", User)
+module.exports = UserModel;
