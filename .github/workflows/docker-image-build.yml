@@ -2,7 +2,10 @@ name: Docker Image & Push to Docker Hub and incremenet version
 
 on:
   push:
-    branches: [ "master" ]
+    branches-ignore:
+      - '**'
+    tags:
+      - 'v*.*.*'
 
 jobs:
 
